@@ -1,0 +1,14 @@
+body{
+    background-color: #ffffff;
+    background-image: url("https://i.imgur.com/Oxpwj88.jpg");
+    background-attachment: fixed;
+    background-size: cover;
+    margin: 0;
+    padding: 0;
+}
+
+.dimmed{
+    background-color: rgba(0,0,0,0.6);
+    width: 100%;
+    height: 100%;
+}
