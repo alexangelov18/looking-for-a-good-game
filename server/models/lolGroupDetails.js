@@ -3,6 +3,7 @@ import mongoose from 'mongoose';
 const lolGroupSchema = mongoose.Schema({
     title: String,
     creator: String,
+    name: String,
     description: String,
     gameMode: {
         type: String,
@@ -10,7 +11,7 @@ const lolGroupSchema = mongoose.Schema({
     },
     tier: {
         type: String,
-        enum: ['Iron', 'Bronze', 'Silver', 'Gold', 'Platinum', 'Diamond', 'Master', 'Grandmaster', 'Challenger']
+        enum: ['Iron', 'Bronze', 'Silver', 'Gold', 'Platinum', 'Emerald', 'Diamond', 'Master', 'Grandmaster', 'Challenger']
     },
     division: {
         type: Number,
@@ -37,8 +38,8 @@ const lolGroupSchema = mongoose.Schema({
         default: '00:00'
     },
     peopleCount: {
-        type: Number,
-        default: 1,
+        type: [String],
+        default: [],
     }
 });
 

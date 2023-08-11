@@ -7,39 +7,44 @@ import { useSelector } from 'react-redux';
 
 const LolForm = ({currentId, setCurrentId}) => {
 
-    const [lolGroupData, setLolGroupData] = useState({
-        title: '', creator: '', description: '',gameMode: '', tier: '', division: '', region: '', willPlayOnDate: '', willPlayOnTime: ''
-    });
-
-    const dispatch = useDispatch();
-    
-    const lolGroup = useSelector((state) => currentId ? state.lolGroups.find((g) => g._id === currentId) : null);
+    const [lolGroupData, setLolGroupData] = useState({ title: '', description: '',gameMode: '', tier: '', division: '', region: '', willPlayOnDate: '', willPlayOnTime: ''});
+    const dispatch = useDispatch(); 
+    const lolGroup = useSelector((state) => currentId ? state.lolGroups.lolGroups.find((g) => g._id === currentId) : null);
+    const user = JSON.parse(localStorage.getItem('profile'));
 
     useEffect(() => {
         if(lolGroup) setLolGroupData(lolGroup);
     }, [lolGroup]);
 
+    const clear = () => {
+        setCurrentId(null);
+        setLolGroupData({ title: '', description: '',gameMode: '', tier: '', division: '', region: '', willPlayOnDate: '', willPlayOnTime: ''});
+    };
+
     const handleSubmit = async (e) => {
         e.preventDefault();
-        if(currentId){
-            dispatch(updateLolGroup(currentId, lolGroupData));
+        if(currentId ){
+            dispatch(updateLolGroup(currentId, {...lolGroupData, name: user?.result?.name}));
         } else {
-            dispatch(createLolGroup(lolGroupData));
+            
+            dispatch(createLolGroup({...lolGroupData, name: user?.result?.name}));
         }
-
         clear();
     };
 
-    const clear = () => {
-        setCurrentId(null);
-        setLolGroupData({ title: '', creator: '', description: '',gameMode: '', tier: '', division: '', region: '', willPlayOnDate: '', willPlayOnTime: ''});
-    };
+   if(!user?.result?.name){
+    return(
+        <Paper sx={paper}>
+            <Typography variant='h6' align='center'> Please Sign In to Create your own Group and like other's Groups.</Typography>
+        </Paper>
+    )
+   }
     
     return (
         <Paper sx={paper}>
             <form autoComplete='off' noValidate sx={form} onSubmit={handleSubmit}>
                 <Typography sx={formItem} variant='h6'>{currentId ? 'Editing' : 'Creating'} League of Legends Group</Typography>
-                <TextField sx={formItem} name='creator' variant='outlined' label='Creator' fullWidth value={lolGroupData.creator} onChange={(e) => setLolGroupData({ ...lolGroupData, creator: e.target.value })}></TextField>
+                {/* <TextField sx={formItem} name='creator' variant='outlined' label='Creator' fullWidth value={lolGroupData.creator} onChange={(e) => setLolGroupData({ ...lolGroupData, creator: e.target.value })}></TextField> */}
                 <TextField sx={formItem} name='title' variant='outlined' label='Title' fullWidth value={lolGroupData.title} onChange={(e) => setLolGroupData({ ...lolGroupData, title: e.target.value })}></TextField>
                 <TextField sx={formItem} name='description' variant='outlined' label='Description' fullWidth value={lolGroupData.description} onChange={(e) => setLolGroupData({ ...lolGroupData, description: e.target.value })} multiline rows={4}></TextField>
                 
@@ -65,6 +70,7 @@ const LolForm = ({currentId, setCurrentId}) => {
                         <MenuItem value={'Silver'}>Silver</MenuItem>
                         <MenuItem value={'Gold'}>Gold</MenuItem>
                         <MenuItem value={'Platinum'}>Platinum</MenuItem>
+                        <MenuItem value={'Emerald'}>Platinum</MenuItem>
                         <MenuItem value={'Diamond'}>Diamond</MenuItem>
                         <MenuItem value={'Master'}>Master</MenuItem>
                         <MenuItem value={'Grandmaster'}>Grandmaster</MenuItem>

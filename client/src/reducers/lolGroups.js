@@ -1,20 +1,34 @@
-import { FETCH_ALL, CREATE, UPDATE, DELETE } from '../constants/actionTypes.js';
+import { FETCH_ALL, CREATE, UPDATE, DELETE, FETCH_BY_SEARCH, START_LOADING, END_LOADING } from '../constants/actionTypes.js';
 
-export default (lolGroups = [], action) => {
+export default (state = { isLoading: true, lolGroups: [] }, action) => {
     switch (action.type) {
+        case START_LOADING:
+            return { ...state, isLoading: true};
+
+        case END_LOADING:
+            return { ...state, isLoading: false};
+            
         case FETCH_ALL:
-            return action.payload;
+            return {
+                ...state,
+                lolGroups: action.payload.data,
+                currentPage: action.payload.currentPage,
+                numberOfPages: action.payload.numberOfPages,
+            };
+
+        case FETCH_BY_SEARCH:
+            return {...state, lolGroups: action.payload };
 
         case CREATE:
-            return [...lolGroups, action.payload];
+            return { ...state, lolGroups: [ ...state.lolGroups, action.payload ] };
 
         case UPDATE:
-            return lolGroups.map((lolGroup) => lolGroup._id === action.payload._id ? action.payload : lolGroup );
+            return { ...state, lolGroups: state.lolGroups.map((lolGroup) => lolGroup._id === action.payload._id ? action.payload : lolGroup ) };
 
         case DELETE:
-            return lolGroups.filter((lolGroup) => lolGroup._id !== action.payload);
+            return { ...state, lolGroups: state.lolGroups.filter((lolGroup) => lolGroup._id !== action.payload) };
 
         default:
-            return lolGroups;
+            return state;
     }
 };

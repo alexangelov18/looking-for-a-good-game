@@ -19,3 +19,7 @@ export const form = {
 export const submit = {
     margin: '30px 0px 20px',
 }
+
+export const googleButton = {
+    marginBottom: '20px 50px'
+}

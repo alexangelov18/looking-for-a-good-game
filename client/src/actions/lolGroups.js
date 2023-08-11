@@ -1,22 +1,40 @@
 import * as api from '../api/index.js';
-import { FETCH_ALL, CREATE, UPDATE, DELETE } from '../constants/actionTypes.js';
+import { FETCH_ALL, CREATE, UPDATE, DELETE, FETCH_BY_SEARCH, START_LOADING, END_LOADING } from '../constants/actionTypes.js';
 
-export const getLolGroups = () => async (dispatch) => {
+export const getLolGroups = (page) => async (dispatch) => {
     
     try {
-        const { data } = await api.fetchLolGroups();
+        dispatch({ type: START_LOADING });
+        const { data: {data, currentPage, numberOfPages} } = await api.fetchLolGroups(page);
 
-        dispatch({ type: FETCH_ALL, payload: data});
+        dispatch({ type: FETCH_ALL, payload: { data, currentPage, numberOfPages }});
+        dispatch({ type: END_LOADING});
+
     } catch (error) {
         console.log(error);
     }  
 };
 
+export const getLolGroupsBySearch = (searchQuery) => async (dispatch) => {
+    try {
+        dispatch({ type: START_LOADING });
+        const {data: { data } } = await api.fetchLolGroupsBySearch(searchQuery);
+        
+        dispatch({ type: FETCH_BY_SEARCH, payload: data});
+        dispatch({ type: END_LOADING});
+        console.log(data);
+    } catch (error) {
+        console.log(error);
+    }
+};
+
 export const createLolGroup = (lolGroup) => async (dispatch) => {
     try {
+        dispatch({ type: START_LOADING });
         const { data } = await api.createLolGroup(lolGroup);
 
         dispatch({ type: CREATE, payload: data });
+        dispatch({ type: END_LOADING});
     } catch (error) {
         console.log(error.request)
         console.log(error.response);

@@ -6,6 +6,7 @@ import dotenv from 'dotenv';
 
 import groupRoutes from './routes/groups.js';
 import lolGroupRoutes from './routes/lolGroups.js';
+import userRoutes from './routes/users.js';
 
 const app = express();
 dotenv.config();
@@ -17,6 +18,7 @@ app.use(cors());
 
 app.use('/groups', groupRoutes);
 app.use('/lolGroups', lolGroupRoutes);
+app.use('/user', userRoutes);
 
 // const CONNECTION_URL = 'mongodb+srv://admin:admin18012000@cluster0.abfrcfd.mongodb.net/';
 const PORT = process.env.PORT || 5000;

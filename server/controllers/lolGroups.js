@@ -1,20 +1,44 @@
 import LolGroupDetails from '../models/lolGroupDetails.js'; 
 import mongoose from 'mongoose';
+import express from 'express';
+
+const router = express.Router();
 
 export const getLolGroups = async (req,res) => {
-    try {
-        const lolGroupDetails = await LolGroupDetails.find();
 
-        res.status(200).json(lolGroupDetails);
+    const { page } = req.query;
+
+    try { 
+        const LIMIT = 5;
+        const startIndex = (Number(page) - 1) * LIMIT; // get the starting index of every page
+        const total = await LolGroupDetails.countDocuments({});
+        
+        const lolGroups = await LolGroupDetails.find().sort({ _id: -1 }).limit(LIMIT).skip(startIndex);
+
+        res.status(200).json({ data: lolGroups, currentPage: Number(page), numberOfPages: Math.ceil(total / LIMIT) });
     } catch (error) {
         res.status(404).json({message: error.message});
+    }
+}
+
+export const getLolGroupsBySearch = async (req, res) => {
+    const { searchQuery, gameMode, tier } = req.query;
+
+    try {
+        const name = new RegExp(searchQuery, 'i');
+
+        const lolGroups = await LolGroupDetails.find({ $or: [{ name }, { gameMode }, { tier }]  });
+
+        res.json({ data: lolGroups });
+    } catch (error) {
+        res.status(404).json({ message: error.message});
     }
 }
 
 export const createLolGroup = async (req, res) => {
     const group = req.body;
     
-    const newLolGroup = new LolGroupDetails(group);
+    const newLolGroup = new LolGroupDetails({...group, creator: req.userId, createdAt: new Date().toISOString()});
 
     try {
         await newLolGroup.save();
@@ -47,12 +71,27 @@ export const deleteLolGroup = async (req, res) => {
 }
 
 export const joinLolGroup = async (req,res) => {
-    const {id} = req.params;
+    const { id } = req.params;
+
+    if(!req.userId){
+        return res.json({ message: "Unathenticated" });
+    } 
 
     if(!mongoose.Types.ObjectId.isValid(id)) return res.status(404).send('No group with that id');
 
     const group = await LolGroupDetails.findById(id);
-    const joinedLolGroup = await LolGroupDetails.findByIdAndUpdate(id, { peopleCount: group.peopleCount + 1}, { new: true });
 
-    res.json(joinedLolGroup);
+    const index = group.peopleCount.findIndex((id) => id === String(req.userId));
+
+    if(index === -1){
+        group.peopleCount.push(req.userId)
+    } else {
+        group.peopleCount = group.peopleCount.filter((id) => id !== String(req.userId));
+    }
+
+    const joinedLolGroup = await LolGroupDetails.findByIdAndUpdate(id, group, { new: true });
+
+    res.status(200).json(joinedLolGroup);
 }
+
+export default router;

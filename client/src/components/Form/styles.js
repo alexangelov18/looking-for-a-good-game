@@ -17,7 +17,7 @@ export const buttonSubmit = {
 
 export const formItem = {
     marginBottom: 2,
-    '& .MuiFilledInput-root': {
+      '& .MuiFilledInput-root': {
         color: 'white',
         borderBottom: '1px solid white !important',
       },
