@@ -21,14 +21,28 @@ export const getLolGroups = async (req,res) => {
     }
 }
 
+export const getLolGroup = async (req,res) => {
+
+    const { id } = req.params;
+
+    try { 
+       const lolGroup = await LolGroupDetails.findById(id);
+       
+       res.status(200).json((lolGroup));
+    } catch (error) {
+        res.status(404).json({message: error.message});
+    }
+}
+
 export const getLolGroupsBySearch = async (req, res) => {
     const { searchQuery, gameMode, tier } = req.query;
 
+    console.log(searchQuery, gameMode, tier);
     try {
         const name = new RegExp(searchQuery, 'i');
 
         const lolGroups = await LolGroupDetails.find({ $or: [{ name }, { gameMode }, { tier }]  });
-
+        
         res.json({ data: lolGroups });
     } catch (error) {
         res.status(404).json({ message: error.message});
@@ -92,6 +106,19 @@ export const joinLolGroup = async (req,res) => {
     const joinedLolGroup = await LolGroupDetails.findByIdAndUpdate(id, group, { new: true });
 
     res.status(200).json(joinedLolGroup);
+}
+
+export const commentLolGroup = async (req, res) => {
+    const { id } = req.params;
+    const { value } = req.body;
+
+    const lolGroup = await LolGroupDetails.findById(id);
+
+    lolGroup.comments.push(value);
+
+    const updatedLolGroup = await LolGroupDetails.findByIdAndUpdate(id, lolGroup, { new: true });
+
+    res.json(updatedLolGroup);
 }
 
 export default router;

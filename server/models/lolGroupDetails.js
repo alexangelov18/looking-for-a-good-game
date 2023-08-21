@@ -40,6 +40,10 @@ const lolGroupSchema = mongoose.Schema({
     peopleCount: {
         type: [String],
         default: [],
+    },
+    comments: {
+        type: [String],
+        default: [],
     }
 });
 

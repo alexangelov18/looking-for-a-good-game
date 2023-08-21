@@ -57,3 +57,8 @@ export const right = {
     right: '10px'
 
 }
+
+export const cardAction = {
+    display: 'block',
+    textAlign: 'initial',
+}

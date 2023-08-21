@@ -1,15 +1,28 @@
 import * as api from '../api/index.js';
-import { FETCH_ALL, CREATE, UPDATE, DELETE, FETCH_BY_SEARCH, START_LOADING, END_LOADING } from '../constants/actionTypes.js';
+import { FETCH_ALL, CREATE, UPDATE, DELETE, FETCH_BY_SEARCH, START_LOADING, END_LOADING, FETCH_LOL_GROUP, COMMENT_LOL_GROUP } from '../constants/actionTypes.js';
+
+export const getLolGroup = (id) => async (dispatch) => {
+    
+    try {
+        dispatch({ type: START_LOADING });
+        const { data } = await api.fetchLolGroup(id);
+
+        dispatch({ type: FETCH_LOL_GROUP, payload: { lolGroup: data }});
+        dispatch({ type: END_LOADING});
+        
+    } catch (error) {
+        console.log(error);
+    }  
+};
 
 export const getLolGroups = (page) => async (dispatch) => {
     
     try {
         dispatch({ type: START_LOADING });
         const { data: {data, currentPage, numberOfPages} } = await api.fetchLolGroups(page);
-
+        console.log(data)
         dispatch({ type: FETCH_ALL, payload: { data, currentPage, numberOfPages }});
         dispatch({ type: END_LOADING});
-
     } catch (error) {
         console.log(error);
     }  
@@ -20,9 +33,8 @@ export const getLolGroupsBySearch = (searchQuery) => async (dispatch) => {
         dispatch({ type: START_LOADING });
         const {data: { data } } = await api.fetchLolGroupsBySearch(searchQuery);
         
-        dispatch({ type: FETCH_BY_SEARCH, payload: data});
+        dispatch({ type: FETCH_BY_SEARCH, payload: { data }});
         dispatch({ type: END_LOADING});
-        console.log(data);
     } catch (error) {
         console.log(error);
     }
@@ -66,6 +78,18 @@ export const joinLolGroup = (id) => async (dispatch) => {
         const { data } = await api.joinLolGroup(id);
 
         dispatch({ type: UPDATE, payload: data});
+    } catch (error) {
+        console.log(error);
+    }
+}
+
+export const commentLolGroup = (value, id) => async (dispatch) => {
+    try {
+        const { data } = await api.commentLolGroup(value, id);
+
+       dispatch({ type: COMMENT_LOL_GROUP, payload: data})
+
+       return data.comments;
     } catch (error) {
         console.log(error);
     }

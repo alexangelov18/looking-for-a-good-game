@@ -1,4 +1,4 @@
-import { FETCH_ALL, CREATE, UPDATE, DELETE, FETCH_BY_SEARCH, START_LOADING, END_LOADING } from '../constants/actionTypes.js';
+import { FETCH_ALL, CREATE, UPDATE, DELETE, FETCH_BY_SEARCH, START_LOADING, END_LOADING, FETCH_LOL_GROUP, COMMENT_LOL_GROUP } from '../constants/actionTypes.js';
 
 export default (state = { isLoading: true, lolGroups: [] }, action) => {
     switch (action.type) {
@@ -17,7 +17,10 @@ export default (state = { isLoading: true, lolGroups: [] }, action) => {
             };
 
         case FETCH_BY_SEARCH:
-            return {...state, lolGroups: action.payload };
+            return {...state, lolGroups: action.payload.data };
+
+        case FETCH_LOL_GROUP:
+            return {...state, lolGroup: action.payload.lolGroup };
 
         case CREATE:
             return { ...state, lolGroups: [ ...state.lolGroups, action.payload ] };
@@ -27,6 +30,16 @@ export default (state = { isLoading: true, lolGroups: [] }, action) => {
 
         case DELETE:
             return { ...state, lolGroups: state.lolGroups.filter((lolGroup) => lolGroup._id !== action.payload) };
+
+        case COMMENT_LOL_GROUP:
+            return {
+                ...state,
+                lolGroups: state.lolGroups.map((lolGroup) => {
+                    if(lolGroup._id === action.payload._id) return action.payload;
+
+                    return lolGroup;
+                })
+            }
 
         default:
             return state;

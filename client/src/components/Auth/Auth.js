@@ -41,7 +41,7 @@ const Auth = () => {
 
    const  googleSuccess = async (res) => {
       const result = jwt_decode(res?.credential)
-      
+      // const token = res?.tokenId;
       // const result = res?.profileObj;
       // const token = jwt_decode(res?.token);
       //  console.log(token);
